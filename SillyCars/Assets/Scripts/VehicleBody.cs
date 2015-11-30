@@ -55,7 +55,6 @@ public class VehicleBody : MonoBehaviour {
         SliderJoint2D slider = p.GetComponent<SliderJoint2D>();
         slider.connectedBody = rb;
         slider.connectedAnchor = socket.transform.localPosition;
-        Debug.Break();
     }
 	
 	// Update is called once per frame
