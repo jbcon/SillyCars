@@ -13,16 +13,7 @@ public class LocomotionComponent : MonoBehaviour {
 
     void Update()
     {
-        if (Input.GetButton("Jump"))
-        {
-            On();
-            Debug.Log("ON");
-        }
-        else
-        {
-            Off();
-            Debug.Log("OFF");
-        }
+        
     }
 
     public void On()
