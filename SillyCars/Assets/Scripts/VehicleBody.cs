@@ -18,19 +18,15 @@ public class VehicleBody : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         rb = GetComponent<Rigidbody2D>();
-        AttachPiston(FrontSocket);
-        
-        AttachPiston(BackSocket);
+        InitComponents();
 	}
 
     void InitComponents()
     {
         // make front component
-        
-
+        AttachLeg(FrontSocket);
         // make back component
-
-
+        AttachPiston(BackSocket);
     }
 
 
@@ -42,8 +38,22 @@ public class VehicleBody : MonoBehaviour {
     void AttachLeg(GameObject socket)
     {
         // make WheelJoint2D on Vehicle body
-        
-
+        WheelJoint2D legJoint = gameObject.AddComponent<WheelJoint2D>();
+        GameObject l = Instantiate(leg) as GameObject;
+        l.transform.parent = transform;
+        l.transform.localPosition = socket.transform.localPosition;
+        legJoint.connectedBody = l.GetComponent<Rigidbody2D>();
+        legJoint.connectedAnchor = l.transform.localPosition;
+        legJoint.anchor = socket.transform.localPosition;
+        legJoint.useMotor = true;
+        JointSuspension2D sus = new JointSuspension2D();
+        sus.frequency = 5;
+        sus.dampingRatio = 1;
+        legJoint.suspension = sus;
+        JointMotor2D newMotor = new JointMotor2D();
+        newMotor.motorSpeed = -300;
+        newMotor.maxMotorTorque = 100;
+        legJoint.motor = newMotor;
     }
 
     void AttachPiston(GameObject socket)
@@ -59,7 +69,6 @@ public class VehicleBody : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        Debug.DrawLine(transform.position, FrontSocket.transform.position);
-        Debug.DrawLine(transform.position, BackSocket.transform.position);
+        
 	}
 }
