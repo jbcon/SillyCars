@@ -40,6 +40,9 @@ public class VehicleBody : MonoBehaviour {
         // make WheelJoint2D on Vehicle body
         WheelJoint2D legJoint = gameObject.AddComponent<WheelJoint2D>();
         GameObject l = Instantiate(leg) as GameObject;
+        SpinningLeg spinleg = l.GetComponent<SpinningLeg>();
+        spinleg.SetRefToJoint(legJoint);
+
         l.transform.parent = transform;
         l.transform.localPosition = socket.transform.localPosition;
         legJoint.connectedBody = l.GetComponent<Rigidbody2D>();
