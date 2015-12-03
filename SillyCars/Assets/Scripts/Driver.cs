@@ -17,6 +17,10 @@ public class Driver : MonoBehaviour
 	private int stateIndex;
 	private int numHoldFrames;
 
+	private bool isDone;
+	private Vector3 initialPos;
+	private Quaternion initialRot;
+
 	//number of frames to hold a single driving state for
 	public int UpdateInterval = 50;
 
@@ -24,6 +28,10 @@ public class Driver : MonoBehaviour
 	public int NumberOfStates = 32;
 
 	public LocomotionComponent frontSwitch, backSwitch;
+
+	public float Fitness = 0;
+
+	public bool IsDone { get { return isDone; } }
 
 	// Use this for initialization
 	void Start()
@@ -38,6 +46,9 @@ public class Driver : MonoBehaviour
 
 		if (UpdateInterval < 0)
 			UpdateInterval = 0;
+
+		initialPos = transform.position;
+		initialRot = transform.rotation;
 	}
 	
 	// Update is called once per frame
@@ -48,11 +59,27 @@ public class Driver : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		if (stateIndex >= NumberOfStates)
-			return;
-
 		if (frontSwitch == null || backSwitch == null)
 			return;
+
+		if (isDone)
+		{
+			//HACK don't restart here, do it somewhere else
+			//     where the fitness is recorded along with
+			//     the states
+			Restart();
+			return;
+		}
+
+		if (stateIndex >= NumberOfStates)
+		{
+			frontSwitch.Off();
+			backSwitch.Off();
+			isDone = true;
+			Fitness = transform.position.x - initialPos.x;
+			Debug.Log("Fitness: " + Fitness);
+			return;
+		}
 
 		numHoldFrames++;
 		if (numHoldFrames >= UpdateInterval)
@@ -62,7 +89,7 @@ public class Driver : MonoBehaviour
 			bool frontState = ((drivingStates >> (stateIndex * 2 + 0)) & 0x1) == 0x1;
 			bool backState =  ((drivingStates >> (stateIndex * 2 + 1)) & 0x1) == 0x1;
 
-			Debug.Log("Update " + stateIndex.ToString() + ": " + frontState.ToString() + ", " + backState.ToString());
+			//Debug.Log("Update " + stateIndex + ": " + frontState + ", " + backState);
 			if (frontState)
 				frontSwitch.On();
 			else
@@ -75,6 +102,25 @@ public class Driver : MonoBehaviour
 
 			stateIndex++;
 		}
+	}
+
+	void Restart()
+	{
+		Fitness = 0;
+		isDone = false;
+		numHoldFrames = 0;
+		stateIndex = 0;
+
+		transform.position = initialPos;
+		transform.rotation = initialRot;
+
+		Rigidbody2D rb = GetComponent<Rigidbody2D>();
+		rb.velocity = Vector2.zero;
+		rb.angularVelocity = 0;
+		rb.Sleep();
+
+		GenerateDrivingPattern();
+
 	}
 
 	void GenerateDrivingPattern()
