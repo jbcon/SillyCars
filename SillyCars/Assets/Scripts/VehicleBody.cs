@@ -9,6 +9,9 @@ public class VehicleBody : MonoBehaviour {
     public GameObject FrontSocket;
     public GameObject BackSocket;
 
+    public LocomotionComponent frontControl;
+    public LocomotionComponent backControl;
+
     public GameObject piston;
     public GameObject leg;
     public GameObject wheel;
@@ -24,9 +27,9 @@ public class VehicleBody : MonoBehaviour {
     void InitComponents()
     {
         // make front component
-        AttachLeg(FrontSocket);
+        frontControl = AttachLeg(FrontSocket);
         // make back component
-        AttachPiston(BackSocket);
+        backControl = AttachPiston(BackSocket);
     }
 
 
@@ -35,13 +38,11 @@ public class VehicleBody : MonoBehaviour {
 
     }
 
-    void AttachLeg(GameObject socket)
+    LocomotionComponent AttachLeg(GameObject socket)
     {
         // make WheelJoint2D on Vehicle body
         WheelJoint2D legJoint = gameObject.AddComponent<WheelJoint2D>();
         GameObject l = Instantiate(leg) as GameObject;
-        SpinningLeg spinleg = l.GetComponent<SpinningLeg>();
-        spinleg.SetRefToJoint(legJoint);
 
         l.transform.parent = transform;
         l.transform.localPosition = socket.transform.localPosition;
@@ -57,9 +58,13 @@ public class VehicleBody : MonoBehaviour {
         newMotor.motorSpeed = -300;
         newMotor.maxMotorTorque = 100;
         legJoint.motor = newMotor;
+
+        SpinningLeg spinleg = l.GetComponent<SpinningLeg>();
+        spinleg.SetRefToJoint(legJoint);
+        return spinleg;
     }
 
-    void AttachPiston(GameObject socket)
+    LocomotionComponent AttachPiston(GameObject socket)
     {
         GameObject p = Instantiate(piston) as GameObject;
         p.transform.parent = transform;
@@ -68,6 +73,8 @@ public class VehicleBody : MonoBehaviour {
         SliderJoint2D slider = p.GetComponent<SliderJoint2D>();
         slider.connectedBody = rb;
         slider.connectedAnchor = socket.transform.localPosition;
+
+        return p.GetComponent<Piston>();
     }
 	
 	// Update is called once per frame

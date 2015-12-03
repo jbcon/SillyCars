@@ -11,14 +11,14 @@ public class SpinningLeg : LocomotionComponent {
     {
         base.Start();
     }
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
     public void SetRefToJoint(WheelJoint2D joint)
     {
         wjoint = joint;
+    }
+
+    protected override void FixedUpdate()
+    {
+        wjoint.useMotor = isOn;
     }
 }
