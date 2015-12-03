@@ -1,11 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Piston : VehicleComponent {
-
-
-
-	// Use this for initialization
+public class Piston : LocomotionComponent {
+    // Use this for initialization
 	protected override void Start () {
         base.Start();
 	}

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class VehicleComponent : MonoBehaviour {
+public class LocomotionComponent : MonoBehaviour {
 
     public float pulseFrequency = 2f;   // frequency of pulse, divide the choice frequency by this
 
