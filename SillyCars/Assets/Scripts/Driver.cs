@@ -128,6 +128,6 @@ public class Driver : MonoBehaviour
 		System.Random rand = new System.Random();
 		drivingStates = rand.Next();
 		drivingStates |= ((long)rand.Next() << 32);
-		Debug.Log(Convert.ToString(drivingStates, 2));
+		Debug.Log(Convert.ToString(drivingStates, 2).PadLeft(64, '0'));
 	}
 }
