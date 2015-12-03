@@ -16,6 +16,8 @@ public class VehicleBody : MonoBehaviour {
     public GameObject leg;
     public GameObject wheel;
 
+    public bool debugInputEnabled = true;
+
     private Rigidbody2D rb;
 
 	// Use this for initialization
@@ -87,6 +89,21 @@ public class VehicleBody : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        
+        if (Input.GetButton("Fire1"))
+        {
+            frontControl.On();
+        }
+        else
+        {
+            frontControl.Off();
+        }
+        if (Input.GetButton("Fire2"))
+        {
+            backControl.On();
+        }
+        else
+        {
+            backControl.Off();
+        }
 	}
 }
