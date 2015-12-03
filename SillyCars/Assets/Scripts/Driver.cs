@@ -23,6 +23,8 @@ public class Driver : MonoBehaviour
 	//maximum of 32 because of limitation in drivingStates (long = 64 bits = 32 couplets)
 	public int NumberOfStates = 32;
 
+	public LocomotionComponent frontSwitch, backSwitch;
+
 	// Use this for initialization
 	void Start()
 	{
@@ -49,6 +51,9 @@ public class Driver : MonoBehaviour
 		if (stateIndex >= NumberOfStates)
 			return;
 
+		if (frontSwitch == null || backSwitch == null)
+			return;
+
 		numHoldFrames++;
 		if (numHoldFrames >= UpdateInterval)
 		{
@@ -58,6 +63,15 @@ public class Driver : MonoBehaviour
 			bool backState =  ((drivingStates >> (stateIndex * 2 + 1)) & 0x1) == 0x1;
 
 			Debug.Log("Update " + stateIndex.ToString() + ": " + frontState.ToString() + ", " + backState.ToString());
+			if (frontState)
+				frontSwitch.On();
+			else
+				frontSwitch.Off();
+
+			if (backState)
+				backSwitch.On();
+			else
+				backSwitch.Off();
 
 			stateIndex++;
 		}

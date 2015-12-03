@@ -30,6 +30,14 @@ public class VehicleBody : MonoBehaviour {
         frontControl = AttachLeg(FrontSocket);
         // make back component
         backControl = AttachPiston(BackSocket);
+
+		Driver driverComp = GetComponent<Driver>();
+
+		if (driverComp != null)
+		{
+			driverComp.frontSwitch = frontControl;
+			driverComp.backSwitch = backControl;
+		}
     }
 
 
