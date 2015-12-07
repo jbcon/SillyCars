@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 
-public class Driver : MonoBehaviour
+public class Driver : MonoBehaviour, System.IComparable<Driver>, System.IEquatable<Driver>
 {
 
 	//a pattern of on/off for the front and back sockets.
@@ -17,7 +17,7 @@ public class Driver : MonoBehaviour
 	private int stateIndex;
 	private int numHoldFrames;
 
-	private bool isDone;
+	private bool isDone, isWaiting;
 	private Vector3 initialPos;
 	private Quaternion initialRot;
 
@@ -34,10 +34,8 @@ public class Driver : MonoBehaviour
 	public bool IsDone { get { return isDone; } }
 
 	// Use this for initialization
-	void Start()
+	void Awake()
 	{
-		GenerateDrivingPattern();
-
 		//Sanitize inputs
 		if (NumberOfStates > 32)
 			NumberOfStates = 32;
@@ -61,73 +59,91 @@ public class Driver : MonoBehaviour
 	{
 		if (frontSwitch == null || backSwitch == null)
 			return;
+        if (!isWaiting)
+        {
+            if (isDone)
+            {
+                //HACK don't restart here, do it somewhere else
+                //     where the fitness is recorded along with
+                //     the states
 
-		if (isDone)
-		{
-			//HACK don't restart here, do it somewhere else
-			//     where the fitness is recorded along with
-			//     the states
-			Restart();
-			return;
-		}
+                ReportResults();
 
-		if (stateIndex >= NumberOfStates)
-		{
-			frontSwitch.Off();
-			backSwitch.Off();
-			isDone = true;
-			Fitness = transform.position.x - initialPos.x;
-			Debug.Log("Fitness: " + Fitness);
-			return;
-		}
+                return;
+            }
 
-		numHoldFrames++;
-		if (numHoldFrames >= UpdateInterval)
-		{
-			numHoldFrames = 0;
+            if (stateIndex >= NumberOfStates)
+            {
+                frontSwitch.Off();
+                backSwitch.Off();
+                isDone = true;
+                Fitness = transform.position.x - initialPos.x;
+                Debug.Log("Fitness: " + Fitness);
+                return;
+            }
 
-			bool frontState = ((drivingStates >> (stateIndex * 2 + 0)) & 0x1) == 0x1;
-			bool backState =  ((drivingStates >> (stateIndex * 2 + 1)) & 0x1) == 0x1;
+            numHoldFrames++;
+            if (numHoldFrames >= UpdateInterval)
+            {
+                numHoldFrames = 0;
 
-			//Debug.Log("Update " + stateIndex + ": " + frontState + ", " + backState);
-			if (frontState)
-				frontSwitch.On();
-			else
-				frontSwitch.Off();
+                bool frontState = ((drivingStates >> (stateIndex * 2 + 0)) & 0x1) == 0x1;
+                bool backState = ((drivingStates >> (stateIndex * 2 + 1)) & 0x1) == 0x1;
 
-			if (backState)
-				backSwitch.On();
-			else
-				backSwitch.Off();
+                //Debug.Log("Update " + stateIndex + ": " + frontState + ", " + backState);
+                if (frontState)
+                    frontSwitch.On();
+                else
+                    frontSwitch.Off();
 
-			stateIndex++;
-		}
+                if (backState)
+                    backSwitch.On();
+                else
+                    backSwitch.Off();
+
+                stateIndex++;
+            }
+        }
 	}
 
-	void Restart()
+	void ReportResults()
 	{
-		Fitness = 0;
-		isDone = false;
-		numHoldFrames = 0;
-		stateIndex = 0;
-
-		transform.position = initialPos;
-		transform.rotation = initialRot;
-
-		Rigidbody2D rb = GetComponent<Rigidbody2D>();
-		rb.velocity = Vector2.zero;
-		rb.angularVelocity = 0;
-		rb.Sleep();
-
-		GenerateDrivingPattern();
-
+        Dispatcher.current.ReportCompletion(this);
+        isWaiting = true;
 	}
 
-	void GenerateDrivingPattern()
+    void Reset()
+    {
+        Fitness = 0;
+        isDone = false;
+        numHoldFrames = 0;
+        stateIndex = 0;
+
+        transform.position = initialPos;
+        transform.rotation = initialRot;
+
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        rb.velocity = Vector2.zero;
+        rb.angularVelocity = 0;
+        rb.Sleep();
+    }
+
+	public void GenerateDrivingPattern(long pattern)
 	{
-		System.Random rand = new System.Random();
-		drivingStates = rand.Next();
-		drivingStates |= ((long)rand.Next() << 32);
-		Debug.Log(Convert.ToString(drivingStates, 2).PadLeft(64, '0'));
+        Reset();
+        drivingStates = pattern;
+        //Debug.Log(Convert.ToString(drivingStates, 2).PadLeft(64, '0'));
+        isWaiting = false;
 	}
+
+    public int CompareTo(Driver other){
+        if (this.Fitness < other.Fitness) return -1;
+        if (this.Fitness == other.Fitness) return 0;
+        return 1;
+    }
+
+    public bool Equals(Driver other)
+    {
+        return this.Fitness == other.Fitness;
+    }
 }
