@@ -123,8 +123,8 @@ public class Driver : MonoBehaviour, System.IComparable<Driver>, System.IEquatab
         transform.rotation = initialRot;
 
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
-        rb.velocity = Vector2.zero;
-        rb.angularVelocity = 0;
+        //rb.velocity = Vector2.zero;
+        //rb.angularVelocity = 0;
         rb.Sleep();
     }
 
