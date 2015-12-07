@@ -64,6 +64,7 @@ public class Dispatcher : MonoBehaviour {
     void GatherFitness()
     {
         // get top two
+        // TODO: get N best candidates
         Driver best = fitnessQueue.Pop();
         Driver secondBest = fitnessQueue.Pop();
 
