@@ -34,6 +34,29 @@ public class Dispatcher : MonoBehaviour {
         driversCheckedIn++;
     }
 
+    void Crossover(long a, long b, out long alpha, out long beta) {
+        
+        // single-point crossover for now
+
+        // pick random bit to start at from 50 to 10
+
+        // I hope I'm doing this right
+        
+        //int n = Random.Range(10, 50);
+        int n = 32;
+        long x = (((long)1 << n) - 1);
+        long a1 = a & x;
+        long a2 = a - a1;
+
+        Debug.Assert(a1 + a2 == a);
+
+        long b1 = b & x;
+        long b2 = b - b1;
+
+        alpha = a1 + b2;
+        beta = b1 + a2;
+    }
+
     void InitialDispatch()
     {
         System.Random rand = new System.Random();
@@ -45,10 +68,20 @@ public class Dispatcher : MonoBehaviour {
         }
     }
 
-    void DispatchDrivers()
+    void DispatchDrivers(long pattern1, long pattern2)
     {
         // TODO: actual GA
-        InitialDispatch();
+        foreach (Driver d in allDrivers) {
+            long a, b;
+            Crossover(pattern1, pattern2, out a, out b);
+            // give them a random child
+            if (Random.value > 0.5f) {
+                d.GenerateDrivingPattern(a);
+            }
+            else {
+                d.GenerateDrivingPattern(b);
+            }
+        }
     }
 
 	// Update is called once per frame
@@ -57,7 +90,6 @@ public class Dispatcher : MonoBehaviour {
         {
             GatherFitness();
             driversCheckedIn = 0;
-            DispatchDrivers();
         }
 	}
 
@@ -72,6 +104,8 @@ public class Dispatcher : MonoBehaviour {
 
         Debug.Log("Best fitness in this iteration: \n" + best.Fitness + "," + secondBest.Fitness);
         Debug.Log("Best patterns in this iteration: \n" + System.Convert.ToString(bestPattern, 16).PadLeft(16, '0') + "," + System.Convert.ToString(secondBestPattern, 16).PadLeft(16, '0'));
+
+        DispatchDrivers(bestPattern, secondBestPattern);
 
         fitnessQueue.Clear();
     }
