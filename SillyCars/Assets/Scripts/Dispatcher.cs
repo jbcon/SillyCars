@@ -67,8 +67,11 @@ public class Dispatcher : MonoBehaviour {
         // TODO: get N best candidates
         Driver best = fitnessQueue.Pop();
         Driver secondBest = fitnessQueue.Pop();
+        long bestPattern = best.startingPattern;
+        long secondBestPattern = secondBest.startingPattern;
 
-        Debug.Log("Best fitness in this iteration: \n" + best.Fitness + "\n" + secondBest.Fitness);
+        Debug.Log("Best fitness in this iteration: \n" + best.Fitness + "," + secondBest.Fitness);
+        Debug.Log("Best patterns in this iteration: \n" + System.Convert.ToString(bestPattern, 16).PadLeft(16, '0') + "," + System.Convert.ToString(secondBestPattern, 16).PadLeft(16, '0'));
 
         fitnessQueue.Clear();
     }

@@ -24,6 +24,8 @@ public class Driver : MonoBehaviour, System.IComparable<Driver>, System.IEquatab
 	//number of frames to hold a single driving state for
 	public int UpdateInterval = 50;
 
+    public long startingPattern;
+
 	//maximum of 32 because of limitation in drivingStates (long = 64 bits = 32 couplets)
 	public int NumberOfStates = 32;
 
@@ -78,7 +80,7 @@ public class Driver : MonoBehaviour, System.IComparable<Driver>, System.IEquatab
                 backSwitch.Off();
                 isDone = true;
                 Fitness = transform.position.x - initialPos.x;
-                Debug.Log("Fitness: " + Fitness);
+                //Debug.Log("Fitness: " + Fitness);
                 return;
             }
 
@@ -131,6 +133,7 @@ public class Driver : MonoBehaviour, System.IComparable<Driver>, System.IEquatab
 	public void GenerateDrivingPattern(long pattern)
 	{
         Reset();
+        startingPattern = pattern;
         drivingStates = pattern;
         //Debug.Log(Convert.ToString(drivingStates, 2).PadLeft(64, '0'));
         isWaiting = false;
