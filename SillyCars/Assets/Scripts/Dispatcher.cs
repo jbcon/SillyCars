@@ -62,19 +62,24 @@ public class Dispatcher : MonoBehaviour {
 
     void MultiPointCrossover(long a, long b, out long alpha, out long beta)
     {
-        //PerformMultiPoint(a, b, out alpha, out beta, 0, 16);
+        PerformMultiPoint(a, b, out alpha, out beta, 0, 16);
         //PerformMultiPoint(a, b, out alpha, out beta, 16, 32);
-        //PerformMultiPoint(a, b, out alpha, out beta, 32, 48);
+        PerformMultiPoint(a, b, out alpha, out beta, 32, 48);
         //PerformMultiPoint(a, b, out alpha, out beta, 48, 64);
     }
 
 
     // helper for the above, where start and end are between 0 and 63
-    /*void PerformMultiPoint(long a, long b, out long alpha, out long beta, int start, int end)
+    void PerformMultiPoint(long a, long b, out long alpha, out long beta, int start, int end)
     {
-        
-        
-    }*/
+		//0001111000
+		long mask = ((1 << (end - start)) - 1) << start;
+		long temp = a & mask;
+
+		//a & ~mask = 1110000111
+		alpha = (a & ~mask) | (b & mask);
+		beta = (b & ~mask) | (temp);
+    }
 
     long GenerateRandomPattern(System.Random rand)
     {
@@ -114,7 +119,7 @@ public class Dispatcher : MonoBehaviour {
         System.Random rand = new System.Random();
         for (int i = 0; i < allDrivers.Count; i++) {
             long a, b;
-            SinglePointCrossover(pattern1, pattern2, out a, out b);
+            MultiPointCrossover(pattern1, pattern2, out a, out b);
             // give them a random child
             if (i == 0) {
                 allDrivers[i].GenerateDrivingPattern(Mutate(a));

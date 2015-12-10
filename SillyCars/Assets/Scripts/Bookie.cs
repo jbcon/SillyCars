@@ -6,7 +6,6 @@ public class Bookie : MonoBehaviour {
 
     public static Bookie current;
     //FileStream outputFile;
-    StreamWriter output;
 
     public float currentBestFitness = 0;
     public long currentBestPattern;
@@ -17,7 +16,6 @@ public class Bookie : MonoBehaviour {
         {
             current = this;
         }
-        output = new StreamWriter("Assets/stats.csv");
 	}
 
     public void UpdateStats(float fitness, long pattern)
@@ -28,12 +26,13 @@ public class Bookie : MonoBehaviour {
 
     public void WriteStats()
     {
+        StreamWriter output = new StreamWriter("Assets/stats.csv");
         output.WriteLine(System.Convert.ToString(currentBestFitness) + ',' + System.Convert.ToString(currentBestPattern, 16).PadLeft(16, '0'));
+        output.Close();
     }
 
     public void WriteStatsToFile()
     {
-        output.Close();
-        output = new StreamWriter("Assets/stats.csv", true);
+
     }
 }
