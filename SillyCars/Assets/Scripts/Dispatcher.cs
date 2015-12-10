@@ -60,7 +60,7 @@ public class Dispatcher : MonoBehaviour {
         beta = b1 + a2;
     }
 
-    /*void MultiPointCrossover(long a, long b, out long alpha, out long beta)
+    void MultiPointCrossover(long a, long b, out long alpha, out long beta)
     {
         PerformMultiPoint(a, b, out alpha, out beta, 0, 16);
         //PerformMultiPoint(a, b, out alpha, out beta, 16, 32);
