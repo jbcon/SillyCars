@@ -7,13 +7,16 @@ public class Dispatcher : MonoBehaviour {
 
     // singleton reference to self
     public static Dispatcher current = null;
+    [Range(0.0f, 1.0f)]
+    public float mutationRate = 0.04f;
+
+    [HideInInspector]
     public List<Driver> allDrivers;
 
     PriorityQueue<Driver> fitnessQueue;
     int iteration = 0, maxIterations = 100;
     int totalDrivers;
     int driversCheckedIn;
-    
 
 	// Use this for initialization
 	void Start () {
@@ -34,7 +37,7 @@ public class Dispatcher : MonoBehaviour {
         driversCheckedIn++;
     }
 
-    void Crossover(long a, long b, out long alpha, out long beta) {
+    void SinglePointCrossover(long a, long b, out long alpha, out long beta) {
         
         // single-point crossover for now
 
@@ -42,8 +45,8 @@ public class Dispatcher : MonoBehaviour {
 
         // I hope I'm doing this right
         
-        //int n = Random.Range(10, 50);
-        int n = 32;
+        int n = Random.Range(10, 50);
+        //int n = 32;
         long x = (((long)1 << n) - 1);
         long a1 = a & x;
         long a2 = a - a1;
@@ -57,6 +60,13 @@ public class Dispatcher : MonoBehaviour {
         beta = b1 + a2;
     }
 
+    long GenerateRandomPattern(System.Random rand)
+    {
+        long pattern = rand.Next();
+        pattern |= ((long)rand.Next() << 32);
+        return pattern;
+    }
+
     void InitialDispatch()
     {
         System.Random rand = new System.Random();
@@ -68,18 +78,38 @@ public class Dispatcher : MonoBehaviour {
         }
     }
 
+    long Mutate(long pattern)
+    {
+        if (Random.value < mutationRate)
+        {
+            long p = pattern;
+            int bitNum = Random.Range(0, 63);
+            long x = (long)1 << bitNum;
+            p ^= x;
+            Debug.Log("MMMUUUUTTTTTAAAAATTTTIIIOOONNNN");
+            return p;
+        }
+        return pattern;
+    }
+
     void DispatchDrivers(long pattern1, long pattern2)
     {
         // TODO: actual GA
-        foreach (Driver d in allDrivers) {
+        System.Random rand = new System.Random();
+        for (int i = 0; i < allDrivers.Count; i++) {
             long a, b;
-            Crossover(pattern1, pattern2, out a, out b);
+            SinglePointCrossover(pattern1, pattern2, out a, out b);
             // give them a random child
-            if (Random.value > 0.5f) {
-                d.GenerateDrivingPattern(a);
+            if (i == 0) {
+                allDrivers[i].GenerateDrivingPattern(Mutate(a));
+            }
+            else if (i == 1)
+            {
+                allDrivers[i].GenerateDrivingPattern(Mutate(b));
             }
             else {
-                d.GenerateDrivingPattern(b);
+                long p = GenerateRandomPattern(rand);
+                allDrivers[i].GenerateDrivingPattern(Mutate(p));
             }
         }
     }
@@ -101,6 +131,11 @@ public class Dispatcher : MonoBehaviour {
         Driver secondBest = fitnessQueue.Pop();
         long bestPattern = best.startingPattern;
         long secondBestPattern = secondBest.startingPattern;
+
+        if (best.Fitness > Bookie.current.currentBestFitness)
+        {
+            Bookie.current.UpdateStats(best.Fitness, bestPattern);
+        }
 
         Debug.Log("Best fitness in this iteration: \n" + best.Fitness + "," + secondBest.Fitness);
         Debug.Log("Best patterns in this iteration: \n" + System.Convert.ToString(bestPattern, 16).PadLeft(16, '0') + "," + System.Convert.ToString(secondBestPattern, 16).PadLeft(16, '0'));
