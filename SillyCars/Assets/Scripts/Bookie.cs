@@ -24,11 +24,16 @@ public class Bookie : MonoBehaviour {
     {
         currentBestFitness = fitness;
         currentBestPattern = pattern;
-        output.WriteLine(System.Convert.ToString(currentBestFitness) + ',' + System.Convert.ToString(currentBestPattern, 16).PadLeft(16, '0'));
     }
 
     public void WriteStats()
     {
+        output.WriteLine(System.Convert.ToString(currentBestFitness) + ',' + System.Convert.ToString(currentBestPattern, 16).PadLeft(16, '0'));
+    }
+
+    public void WriteStatsToFile()
+    {
         output.Close();
+        output = new StreamWriter("Assets/stats.csv", true);
     }
 }
