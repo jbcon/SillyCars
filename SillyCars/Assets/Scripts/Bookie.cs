@@ -26,9 +26,9 @@ public class Bookie : MonoBehaviour {
         currentBestPattern = pattern;
     }
 
-    public void WriteStats()
+    public void WriteStats(float fit)
     {
-        output.WriteLine(System.Convert.ToString(currentBestFitness) + ',' + System.Convert.ToString(currentBestPattern, 16).PadLeft(16, '0'));
+        output.WriteLine(fit + ',' + System.Convert.ToString(currentBestFitness) + ',' + System.Convert.ToString(currentBestPattern, 16).PadLeft(16, '0'));
     }
 
     public void WriteStatsToFile()

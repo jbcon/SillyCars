@@ -60,7 +60,7 @@ public class Dispatcher : MonoBehaviour {
         beta = b1 + a2;
     }
 
-    void MultiPointCrossover(long a, long b, out long alpha, out long beta)
+    /*void MultiPointCrossover(long a, long b, out long alpha, out long beta)
     {
         //PerformMultiPoint(a, b, out alpha, out beta, 0, 16);
         //PerformMultiPoint(a, b, out alpha, out beta, 16, 32);
@@ -70,7 +70,7 @@ public class Dispatcher : MonoBehaviour {
 
 
     // helper for the above, where start and end are between 0 and 63
-    /*void PerformMultiPoint(long a, long b, out long alpha, out long beta, int start, int end)
+    void PerformMultiPoint(long a, long b, out long alpha, out long beta, int start, int end)
     {
         
         
@@ -153,7 +153,7 @@ public class Dispatcher : MonoBehaviour {
             Bookie.current.UpdateStats(best.Fitness, bestPattern);
         }
 
-        Bookie.current.WriteStats();
+        Bookie.current.WriteStats(best.Fitness);
 
         Debug.Log("Best fitness in this iteration: \n" + best.Fitness + "," + secondBest.Fitness);
         Debug.Log("Best patterns in this iteration: \n" + System.Convert.ToString(bestPattern, 16).PadLeft(16, '0') + "," + System.Convert.ToString(secondBestPattern, 16).PadLeft(16, '0'));
