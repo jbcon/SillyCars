@@ -26,8 +26,8 @@ public class Bookie : MonoBehaviour {
 
     public void WriteStats(float fit)
     {
-        StreamWriter output = new StreamWriter("Assets/stats.csv");
-        output.WriteLine(System.Convert.ToString(currentBestFitness) + ',' + System.Convert.ToString(currentBestPattern, 16).PadLeft(16, '0'));
+        StreamWriter output = new StreamWriter("Assets/stats.csv", true);
+        output.WriteLine(fit + ',' + System.Convert.ToString(currentBestFitness) + ',' + System.Convert.ToString(currentBestPattern, 16).PadLeft(16, '0'));
         output.Close();
     }
 
